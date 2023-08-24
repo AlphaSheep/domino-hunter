@@ -1,3 +1,5 @@
+pub mod eo_fb;
+
 use crate::{rawcube::{RawState, TurnEffect}, turndef::Turn};
 use std::{hash::Hash, usize};
 
@@ -8,7 +10,7 @@ pub trait Coordinate : Copy + Clone + PartialEq + Eq + Hash {
     fn new(raw_coord: usize) -> Self;
     fn get_size() -> usize;
     fn get_solved_coords() -> Vec<usize>;
-    fn get_allowed_turns(&self) -> Vec<Turn>;
+    fn get_allowed_turns() -> Vec<Turn>;
     fn get_raw_value(&self) -> usize;
     fn from_raw_state(state: RawState) -> Self;
     fn to_example_raw_state(&self) -> RawState;

@@ -1,23 +1,21 @@
 mod turndef;
 mod rawcube;
-mod coord;
+mod coordinates;
 mod coordutils;
 mod mathutils;
 mod movetables;
 mod pruningtables;
 mod solver;
 
-mod eo_fb;
-
 use std::time::Instant;
 
 use crate::rawcube::{TurnEffect, RawState};
-use crate::turndef::{Turn, TurnVec};
-use crate::coord::Coordinate;
-use crate::eo_fb::coord::EOFBCoord;
+use crate::turndef::{Turn, Algorithm};
+use crate::coordinates::Coordinate;
 use crate::movetables::MoveTables;
 use crate::pruningtables::PruningTable;
 use crate::solver::solve_optimally;
+use crate::coordinates::eo_fb::EOFBCoord;
 
 
 fn main() {

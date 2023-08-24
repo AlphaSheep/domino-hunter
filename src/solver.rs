@@ -1,4 +1,4 @@
-use crate::coord::Coordinate;
+use crate::coordinates::Coordinate;
 use crate::movetables::MoveTables;
 use crate::pruningtables::PruningTable;
 use crate::turndef::Turn;

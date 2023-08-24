@@ -1,4 +1,4 @@
-use crate::coord::Coordinate;
+use crate::coordinates::Coordinate;
 use crate::coordutils::{coord_to_flip, flip_to_coord};
 use crate::rawcube::{RawState, StateList, Flip, TurnEffect};
 use crate::turndef::Turn;
@@ -40,7 +40,7 @@ impl Coordinate for EOFBCoord {
         self.coord
     }
 
-    fn get_allowed_turns(&self) -> Vec<Turn> {
+    fn get_allowed_turns() -> Vec<Turn> {
         // All outer layer turns are allowed
         Turn::get_outer_layer_turns()
     }

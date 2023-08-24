@@ -1,6 +1,6 @@
 use std::collections::HashMap;
 
-use crate::coord::Coordinate;
+use crate::coordinates::Coordinate;
 use crate::turndef::Turn;
 use crate::movetables::MoveTables;
 
