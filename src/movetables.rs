@@ -64,12 +64,18 @@ impl<C: Coordinate> MoveTables<C> {
     }
 
     fn generate_base_tables(&mut self, move_set: &[Turn]) {
-        for turn in move_set {
-            if turn.is_base_move() {
-                self.table.insert(*turn, MoveTable::generate_from_base_turn::<C>(turn));
-                self.turns.push(*turn);
+        let mut base_turns = Vec::new();
+        for turn in move_set.to_base_turns() {
+            if turn.is_base_move() && !base_turns.contains(&turn) {
+                base_turns.push(turn);
             }
         }
+
+        for turn in base_turns {
+            self.table.insert(turn, MoveTable::generate_from_base_turn::<C>(&turn));
+            self.turns.push(turn);
+        }
+        println!("Generated {} base tables", self.table.len());
     }
 
     fn generate_compound_tables(&mut self, move_set: &[Turn]) {
@@ -89,7 +95,8 @@ impl<C: Coordinate> MoveTables<C> {
     }
 
     pub fn apply_move_to_coord(&self, coord: C, turn: &Turn) -> C {
-        let table = self.table.get(&turn).unwrap();
+        let table = self.table.get(&turn)
+        .expect("Move table not found for turn");
         let new_coord = table.table[coord.get_raw_value()];
         C::new(new_coord)
     }

@@ -37,7 +37,7 @@ fn main() {
     // Generate move tables for EO
     println!("Generating move tables");
     let now = Instant::now();
-    let eo_move_tables = MoveTables::<EOFBCoord>::new(&Turn::get_base_outer_layer_turns());
+    let eo_move_tables = MoveTables::<EOFBCoord>::new(&EOFBCoord::get_allowed_turns());
     println!("Total time taken: {} seconds", (now.elapsed().as_micros() as f64 / 1_000_000.0));
 
     // Sanity check move tables
