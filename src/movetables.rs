@@ -2,7 +2,7 @@ use std::collections::HashMap;
 
 use crate::coordinates::Coordinate;
 use crate::rawcube::TurnEffect;
-use crate::turndef::Turn;
+use crate::turndef::{Turn, Algorithm};
 
 /// MoveTable maps how a specific turn changes a coordinate
 struct MoveTable {

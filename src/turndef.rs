@@ -281,30 +281,49 @@ impl Turn {
     }
 }
 
-pub trait TurnVec {
+pub trait Algorithm {
     fn to_base_turns(&self) -> Vec<Turn>;
     fn to_algorithm_string(&self) -> String;
 }
 
-impl TurnVec for Vec<Turn> {
+impl Algorithm for Vec<Turn> {
     fn to_base_turns(&self) -> Vec<Turn> {
-        let mut turns = Vec::new();
-        for turn in self {
-            turns.extend(turn.to_base_turns());
-        }
-        turns
+        to_base_turns(self.as_slice())
     }
 
     fn to_algorithm_string(&self) -> String {
-        let mut alg = String::new();
-        for turn in self {
-            alg.push_str(&turn.to_name());
-            alg.push(' ');
-        }
-        alg.pop();
-        alg
+        to_algorithm_string(self.as_slice())
     }
 }
+
+impl Algorithm for &[Turn] {
+    fn to_base_turns(&self) -> Vec<Turn> {
+        to_base_turns(self)
+    }
+
+    fn to_algorithm_string(&self) -> String {
+        to_algorithm_string(self)
+    }
+}
+
+fn to_base_turns(turns: &[Turn]) -> Vec<Turn> {
+    let mut base_turns = Vec::new();
+    for turn in turns {
+        base_turns.extend(turn.to_base_turns());
+    }
+    base_turns
+}
+
+fn to_algorithm_string(turns: &[Turn]) -> String {
+    let mut alg = String::new();
+    for turn in turns {
+        alg.push_str(&turn.to_name());
+        alg.push(' ');
+    }
+    alg.pop();
+    alg
+}
+
 
 #[cfg(test)]
 mod tests {
