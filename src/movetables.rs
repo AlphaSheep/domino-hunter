@@ -41,7 +41,6 @@ impl MoveTable {
 
 /// MoveTables maps how each turn from a set of turns changes a coordinate
 pub struct MoveTables<C: Coordinate> {
-    initialised: bool,
     table: HashMap<Turn, MoveTable>,
     turns: Vec<Turn>,
     _base_coord: C,
@@ -50,7 +49,6 @@ pub struct MoveTables<C: Coordinate> {
 impl<C: Coordinate> MoveTables<C> {
     fn empty() -> Self {
         Self {
-            initialised: false,
             table: HashMap::new(),
             _base_coord: C::new(0),
             turns: Vec::new(),
@@ -72,7 +70,6 @@ impl<C: Coordinate> MoveTables<C> {
                 self.turns.push(*turn);
             }
         }
-        self.initialised = true;
     }
 
     fn generate_compound_tables(&mut self, move_set: &[Turn]) {
@@ -82,7 +79,6 @@ impl<C: Coordinate> MoveTables<C> {
                 self.turns.push(*turn);
             }
         }
-        self.initialised = true;
     }
 
     pub fn new(move_set: &[Turn]) -> Self {
