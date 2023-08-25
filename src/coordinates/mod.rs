@@ -1,4 +1,7 @@
 pub mod eo_fb;
+pub mod co_ud;
+pub mod e_slice_edge_sep;
+pub mod cp;
 
 use crate::{rawcube::{RawState, TurnEffect}, turndef::Turn};
 use std::{hash::Hash, usize};

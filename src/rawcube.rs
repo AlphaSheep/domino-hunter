@@ -22,7 +22,7 @@ impl PiecePosition for usize {
     }
 }
 
- #[derive(Clone, Copy, Debug, PartialEq, Eq)]
+ #[derive(Clone, Copy, Debug, PartialEq, Eq, PartialOrd, Ord)]
 pub enum Corner {
     UBL = 0,
     UFL = 1,
@@ -46,7 +46,24 @@ impl PieceState for Corner {
     }
 }
 
-#[derive(Clone, Copy, Debug, PartialEq, Eq)]
+impl Into<Corner> for usize {
+    fn into(self) -> Corner {
+        match self % 8 {
+            0 => Corner::UBL,
+            1 => Corner::UFL,
+            2 => Corner::UFR,
+            3 => Corner::UBR,
+            4 => Corner::DBL,
+            5 => Corner::DFL,
+            6 => Corner::DFR,
+            7 => Corner::DBR,
+            _ => panic!("Impossible corner value: {}", self),
+        }
+    }
+}
+
+
+#[derive(Clone, Copy, Debug, PartialEq, Eq, PartialOrd, Ord)]
 pub enum Edge {
     UB = 0,
     UL = 1,
@@ -74,7 +91,27 @@ impl PieceState for Edge {
     }
 }
 
-#[derive(Clone, Copy, Debug, PartialEq, Eq)]
+impl Into<Edge> for usize {
+    fn into(self) -> Edge {
+        match self % 12 {
+            0 => Edge::UB,
+            1 => Edge::UL,
+            2 => Edge::UF,
+            3 => Edge::UR,
+            4 => Edge::BL,
+            5 => Edge::FL,
+            6 => Edge::FR,
+            7 => Edge::BR,
+            8 => Edge::DB,
+            9 => Edge::DL,
+            10 => Edge::DF,
+            11 => Edge::DR,
+            _ => panic!("Impossible edge value: {}", self),
+        }
+    }
+}
+
+#[derive(Clone, Copy, Debug, PartialEq, Eq, PartialOrd, Ord)]
 pub enum Centre {
     U = 0,
     L = 1,
@@ -96,13 +133,27 @@ impl PieceState for Centre {
     }
 }
 
+impl Into<Centre> for usize {
+    fn into(self) -> Centre {
+        match self % 6 {
+            0 => Centre::U,
+            1 => Centre::L,
+            2 => Centre::F,
+            3 => Centre::R,
+            4 => Centre::B,
+            5 => Centre::D,
+            _ => panic!("Impossible centre value: {}", self),
+        }
+    }
+}
+
 /*
 Flips indicate the orientation of an edge. We define an edge's orientation as "good" relative to a particular
 axis if it can be moved into the solved position with no quarter turns about that axis, and "bad" otherwise.
 We arbitrarily choose to use the FB axis as the axis of reference.
 */
 
-#[derive(Clone, Copy, Debug, PartialEq, Eq)]
+#[derive(Clone, Copy, Debug, PartialEq, Eq, PartialOrd, Ord)]
 pub enum Flip {
     Good = 0,
     Bad = 1,
@@ -141,7 +192,7 @@ to twist the corner clockwise into a good state, and "anticlockwise" otherwise.
 We arbitrarily choose to use the UD axis as the axis of reference.
 */
 
- #[derive(Clone, Copy, Debug, PartialEq, Eq)]
+ #[derive(Clone, Copy, Debug, PartialEq, Eq, PartialOrd, Ord)]
 pub enum Twist {
     None = 0,
     CW = 1,

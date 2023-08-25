@@ -6,6 +6,7 @@ use crate::turndef::Turn;
 /// Coordinate for edge orientation relative to the FB axis
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
 pub struct EOFBCoord {
+
     coord: usize,
 }
 
@@ -23,7 +24,7 @@ impl EOFBCoord {
 
 impl Coordinate for EOFBCoord {
     fn new(raw_coord: usize) -> Self {
-        EOFBCoord {
+        Self {
             coord: raw_coord
         }
     }
@@ -50,7 +51,7 @@ impl Coordinate for EOFBCoord {
         // We only care about the first 11 flips
         // The last flip is determined by the first 11
         // as there are always an even number bad of edges
-        EOFBCoord {
+        Self {
             coord: flip_to_coord(&flips[0..11])
         }
     }
@@ -64,7 +65,7 @@ impl Coordinate for EOFBCoord {
     fn apply_raw_move(&self, turn_effect: &TurnEffect) -> Self {
         let mut flips = self.get_flips();
         turn_effect.apply_to_flips_statelist(&mut flips);
-        EOFBCoord {
+        Self {
             coord: flip_to_coord(&flips.as_slice()[0..11])
         }
     }
