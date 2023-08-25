@@ -62,8 +62,8 @@ impl Coordinate for ESliceEdgeSepCoord {
         Turn::get_outer_layer_turns()
     }
 
-    fn convert_raw_state_to_coord(&self, state: RawState) -> usize {
-        edge_sep_to_coord(state.edges)
+    fn convert_raw_state_to_coord(&self, state: &RawState) -> usize {
+        edge_sep_to_coord(&state.edges)
     }
 
     fn convert_coord_to_example_raw_state(&self, coord: usize) -> RawState {
@@ -77,13 +77,14 @@ impl Coordinate for ESliceEdgeSepCoord {
         let turn_effect = TurnEffect::from_turn(turn);
         turn_effect.apply_to_edges_statelist(&mut edges);
 
-        edge_sep_to_coord(edges)
+        edge_sep_to_coord(&edges)
     }
 
 }
 
-fn edge_sep_to_coord(edge_state: StateList<Edge>) -> usize {
-    let mut edges = edge_state;
+fn edge_sep_to_coord(edge_state: &StateList<Edge>) -> usize {
+    let mut edges = StateList::new(edge_state.as_vec());
+
     edges.apply_swaps(&E_UD_SWAPS);
     let mut is_slice_edge = [false; 12];
     for i in 0..12 {

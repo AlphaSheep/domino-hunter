@@ -41,7 +41,7 @@ impl Coordinate for COUDCoord {
         Turn::get_outer_layer_turns()
     }
 
-    fn convert_raw_state_to_coord(&self, state: RawState) -> usize {
+    fn convert_raw_state_to_coord(&self, state: &RawState) -> usize {
         twist_to_coord(&state.twists.as_slice()[0..7])
     }
 

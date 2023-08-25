@@ -38,7 +38,7 @@ impl Coordinate for CornerPermCoord {
         Turn::get_outer_layer_turns()
     }
 
-    fn convert_raw_state_to_coord(&self, state: RawState) -> usize {
+    fn convert_raw_state_to_coord(&self, state: &RawState) -> usize {
         permutation_to_coord(state.corners.as_slice())
     }
 

@@ -244,7 +244,7 @@ The lists are ordered in the same order as the pieces are defined.
 */
 
 #[derive(Clone, Debug)]
-pub struct StateList<S: PieceState> {
+pub struct StateList<S: PieceState + Copy> {
     states: Vec<S>,
 }
 
@@ -263,6 +263,10 @@ impl<S: PieceState + Copy> StateList<S> {
 
     pub fn as_slice(&self) -> &[S] {
         &self.states
+    }
+
+    pub fn as_vec(&self) -> Vec<S> {
+        self.states.clone()
     }
 
     fn apply_swap<P: PiecePosition>(&mut self, swap: &Swap<P>) {

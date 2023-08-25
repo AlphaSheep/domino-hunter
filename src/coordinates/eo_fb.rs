@@ -40,7 +40,7 @@ impl Coordinate for EOFBCoord {
         Turn::get_outer_layer_turns()
     }
 
-    fn convert_raw_state_to_coord(&self, state: RawState) -> usize {
+    fn convert_raw_state_to_coord(&self, state: &RawState) -> usize {
         let flips = state.flips.as_slice();
         // We only care about the first 11 flips
         // The last flip is determined by the first 11

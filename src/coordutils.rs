@@ -4,7 +4,7 @@ types of coordinate. Types implementing the Coordinate trait can use these
 */
 
 use crate::mathutils::{binomial, factorial};
-use crate::rawcube::{Flip, Twist};
+use crate::rawcube::{Flip, Twist, PieceState};
 
 /*
 Flip is a list of flips of arbitrary length.
@@ -98,15 +98,16 @@ pub fn permutation_to_coord<T: PartialOrd>(positions: &[T]) -> usize {
 
 pub fn coord_to_permutation(mut coord: usize, num_pieces: usize) -> Vec<usize> {
     let mut state = Vec::with_capacity(num_pieces);
-    for _ in (0..num_pieces) {
-        state.push(0);
-    }
-    let mut available: Vec<usize> = (0..num_pieces).rev().collect();
-    let factors = get_factors(num_pieces);
+    let mut available = Vec::with_capacity(num_pieces);
     for i in (0..num_pieces).rev() {
-        let index = coord / factors[i];
+        state.push(0);
+        available.push(i);
+    }
+    for i in (0..num_pieces).rev() {
+        let factor = factorial(i);
+        let index = coord / factor;
         state[i] = available.remove(index);
-        coord %= factors[i];
+        coord %= factor;
     }
     state
 }
@@ -114,7 +115,7 @@ pub fn coord_to_permutation(mut coord: usize, num_pieces: usize) -> Vec<usize> {
 fn get_factors(num_pieces: usize) -> Vec<usize> {
     let mut factors = Vec::with_capacity(num_pieces);
     factors.push(1);
-    for i in (1..num_pieces) {
+    for i in 1..num_pieces {
         factors.push(factorial(i));
     }
     factors
@@ -199,6 +200,31 @@ pub fn coord_to_piece_distribution(mut coord: usize, num_positions: usize, num_p
         }
     }
     state
+}
+
+/*
+Given a distribution coordinate and an ordered list of pieces in and out of the group,
+combines the in and out of group pieces into a single list.
+*/
+pub fn get_perm_for_distribution_coord<T: PieceState + Copy>(coord:usize, in_group_pieces: &[T], out_of_group_pieces: &[T]) -> Vec<T> {
+    let num_in_group = in_group_pieces.len();
+    let num_positions = num_in_group + out_of_group_pieces.len();
+
+    let layer_distribution = coord_to_piece_distribution(coord, num_positions, num_in_group);
+    let mut on_layer_index = 0;
+    let mut off_layer_index = 0;
+
+    let mut pieces = Vec::new();
+    for belongs_in_layer in layer_distribution {
+        if belongs_in_layer {
+            pieces.push(in_group_pieces[on_layer_index]);
+            on_layer_index += 1;
+        } else {
+            pieces.push(out_of_group_pieces[off_layer_index]);
+            off_layer_index += 1;
+        }
+    }
+    pieces
 }
 
 
