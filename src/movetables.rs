@@ -1,4 +1,8 @@
 use std::collections::HashMap;
+use std::fmt::Debug;
+use std::hash::BuildHasherDefault;
+
+use nohash_hasher::NoHashHasher;
 
 use crate::coordinates::Coordinate;
 use crate::rawcube::TurnEffect;
@@ -45,7 +49,7 @@ impl<C: Coordinate> MoveTable<C> {
 
 /// MoveTables maps how each turn from a set of turns changes a coordinate
 pub struct MoveTables<C: Coordinate> {
-    table: HashMap<Turn, MoveTable<C>>,
+    table: HashMap<Turn, MoveTable<C>, BuildHasherDefault<NoHashHasher<usize>>>,
     turns: Vec<Turn>,
     coord_type: C,
 }
@@ -53,7 +57,7 @@ pub struct MoveTables<C: Coordinate> {
 impl<C: Coordinate> MoveTables<C> {
     fn empty(coord_type: C) -> Self {
         Self {
-            table: HashMap::new(),
+            table: HashMap::with_hasher(BuildHasherDefault::default()),
             coord_type,
             turns: Vec::new(),
         }
