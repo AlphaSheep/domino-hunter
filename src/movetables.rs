@@ -11,7 +11,7 @@ struct MoveTable {
 
 impl MoveTable {
     fn generate_from_base_turn<C: Coordinate>(turn: &Turn) -> Self {
-        let mut table = vec![0; C::get_size()];
+        let mut table = vec![usize::MAX; C::get_size()];
         let turn_effect = TurnEffect::from_turn(&turn);
 
         for i in 0..C::get_size() {
@@ -23,7 +23,7 @@ impl MoveTable {
     }
 
     fn generate_from_compound_turn<C: Coordinate>(turn: &Turn, move_tables: &MoveTables<C>) -> Self {
-        let mut table = vec![0; C::get_size()];
+        let mut table = vec![usize::MAX; C::get_size()];
         let base_turns = turn.to_base_turns();
 
         for i in 0..C::get_size() {
@@ -32,7 +32,7 @@ impl MoveTable {
             for base_turn in &base_turns {
                 new_coord = move_tables.apply_move_to_coord(new_coord, base_turn);
             }
-            table.push(new_coord.get_raw_value());
+            table[i] = new_coord.get_raw_value();
         }
 
         Self { table }
@@ -75,7 +75,6 @@ impl<C: Coordinate> MoveTables<C> {
             self.table.insert(turn, MoveTable::generate_from_base_turn::<C>(&turn));
             self.turns.push(turn);
         }
-        println!("Generated {} base tables", self.table.len());
     }
 
     fn generate_compound_tables(&mut self, move_set: &[Turn]) {
