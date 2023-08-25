@@ -32,71 +32,77 @@ fn main() {
     }
     println!("{:?}", cube);
 
+    // Get coordinate types
+    let eo = EOFBCoord{};
+    let co = COUDCoord{};
+    let e_slice = ESliceEdgeSepCoord{};
+    let cp = CornerPermCoord{};
+
     // sanity check EO coord
-    let coord = CornerPermCoord::new(6313);
+    let coord = 0;
     let turn = Turn::from_name("F");
-    let new_coord = coord.apply_raw_move(&TurnEffect::from_turn(&turn));
+    let new_coord = eo.apply_raw_move(coord, &turn);
     println!("Using raw effect on coord. {:?} {} -> new coord: {:?}", coord, turn.to_name(), new_coord);
 
     // Generate move tables for EO
     println!("Generating move tables");
     let now = Instant::now();
-    let eo_move_tables = MoveTables::<EOFBCoord>::new(&EOFBCoord::get_allowed_turns());
-    let co_move_tables = MoveTables::<COUDCoord>::new(&COUDCoord::get_allowed_turns());
-    let e_slice_move_tables = MoveTables::<ESliceEdgeSepCoord>::new(&ESliceEdgeSepCoord::get_allowed_turns());
-    let cp_move_tables = MoveTables::<CornerPermCoord>::new(&CornerPermCoord::get_allowed_turns());
+    let eo_move_tables = MoveTables::new(eo, &eo.get_allowed_turns());
+    let co_move_tables = MoveTables::new(co, &co.get_allowed_turns());
+    let e_slice_move_tables = MoveTables::new(e_slice, &e_slice.get_allowed_turns());
+    let cp_move_tables = MoveTables::new(cp, &cp.get_allowed_turns());
     println!("Total time taken: {} seconds", (now.elapsed().as_micros() as f64 / 1_000_000.0));
 
     // Sanity check move tables
-    let cp_coord = CornerPermCoord::new(6313);
+    let cp_coord = 6313;
     let cp_turn = Turn::from_name("F");
     let cp_new_coord = cp_move_tables.apply_move_to_coord(cp_coord, &cp_turn);
     println!("Using CP move tables. {:?} {} -> new coord: {:?}", cp_coord, cp_turn.to_name(), cp_new_coord);
 
-    let cp_coord = CornerPermCoord::new(6653);
+    let cp_coord = 6653;
     let cp_new_coord = cp_move_tables.apply_move_to_coord(cp_coord, &cp_turn);
     println!("Using CP move tables. {:?} {} -> new coord: {:?}", cp_coord, cp_turn.to_name(), cp_new_coord);
 
-    let cp_coord = CornerPermCoord::new(9676);
+    let cp_coord = 9676;
     let cp_new_coord = cp_move_tables.apply_move_to_coord(cp_coord, &cp_turn);
     println!("Using CP move tables. {:?} {} -> new coord: {:?}", cp_coord, cp_turn.to_name(), cp_new_coord);
 
-    let cp_coord = CornerPermCoord::new(9336);
+    let cp_coord = 9336;
     let cp_new_coord = cp_move_tables.apply_move_to_coord(cp_coord, &cp_turn);
     println!("Using CP move tables. {:?} {} -> new coord: {:?}", cp_coord, cp_turn.to_name(), cp_new_coord);
 
     let cp_turn = Turn::from_name("F'");
 
-    let cp_coord = CornerPermCoord::new(6313);
+    let cp_coord = 6313;
     let cp_new_coord = cp_move_tables.apply_move_to_coord(cp_coord, &cp_turn);
     println!("Using CP move tables. {:?} {} -> new coord: {:?}", cp_coord, cp_turn.to_name(), cp_new_coord);
 
-    let cp_coord = CornerPermCoord::new(9336);
+    let cp_coord = 9336;
     let cp_new_coord = cp_move_tables.apply_move_to_coord(cp_coord, &cp_turn);
     println!("Using CP move tables. {:?} {} -> new coord: {:?}", cp_coord, cp_turn.to_name(), cp_new_coord);
 
-    let cp_coord = CornerPermCoord::new(9676);
+    let cp_coord = 9676;
     let cp_new_coord = cp_move_tables.apply_move_to_coord(cp_coord, &cp_turn);
     println!("Using CP move tables. {:?} {} -> new coord: {:?}", cp_coord, cp_turn.to_name(), cp_new_coord);
 
-    let cp_coord = CornerPermCoord::new(6653);
+    let cp_coord = 6653;
     let cp_new_coord = cp_move_tables.apply_move_to_coord(cp_coord, &cp_turn);
     println!("Using CP move tables. {:?} {} -> new coord: {:?}", cp_coord, cp_turn.to_name(), cp_new_coord);
 
     // Generate pruning tables for EO
     println!("Generating pruning tables");
     let now = Instant::now();
-    let eo_pruning_table = PruningTable::<EOFBCoord>::new(&eo_move_tables);
-    let co_pruning_table = PruningTable::<COUDCoord>::new(&co_move_tables);
-    let e_slice_pruning_table = PruningTable::<ESliceEdgeSepCoord>::new(&e_slice_move_tables);
-    let cp_pruning_table = PruningTable::<CornerPermCoord>::new(&cp_move_tables);
+    let eo_pruning_table = PruningTable::new(eo, &eo_move_tables);
+    let co_pruning_table = PruningTable::new(co, &co_move_tables);
+    let e_slice_pruning_table = PruningTable::new(e_slice, &e_slice_move_tables);
+    let cp_pruning_table = PruningTable::new(cp, &cp_move_tables);
     println!("Total time taken: {} seconds", (now.elapsed().as_micros() as f64 / 1_000_000.0));
 
     // Sanity check pruning tables
-    println!("EO distance: {:?}", eo_pruning_table.get_distance(&EOFBCoord::new(1)));
-    println!("CO distance: {:?}", co_pruning_table.get_distance(&COUDCoord::new(1)));
-    println!("E slice distance: {:?}", e_slice_pruning_table.get_distance(&ESliceEdgeSepCoord::new(1)));
-    println!("CP distance: {:?}", cp_pruning_table.get_distance(&CornerPermCoord::new(1)));
+    println!("EO distance: {:?}", eo_pruning_table.get_distance(1));
+    println!("CO distance: {:?}", co_pruning_table.get_distance(1));
+    println!("E slice distance: {:?}", e_slice_pruning_table.get_distance(1));
+    println!("CP distance: {:?}", cp_pruning_table.get_distance(1));
 
     // let solution = solve_optimally(new_coord, eo_move_tables, eo_pruning_table);
     // println!("Solution: {:?}", solution.to_algorithm_string());

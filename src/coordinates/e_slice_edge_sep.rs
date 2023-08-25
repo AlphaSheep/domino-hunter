@@ -6,7 +6,6 @@ use crate::turndef::Turn;
 /// Coordinate to represent the separation of edges into E slice and UD slice
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
 pub struct ESliceEdgeSepCoord {
-    coord: usize,
 }
 
 const NUM_EDGE_SEP_COMBINATIONS: usize = 495;
@@ -19,8 +18,12 @@ const E_UD_SWAPS: [Swap<Edge>; 4] = [
 ];
 
 impl ESliceEdgeSepCoord {
-    fn get_edges(&self) -> StateList<Edge> {
-        let edge_sep_coord = self.coord % NUM_EDGE_SEP_COMBINATIONS;
+    fn new() -> Self {
+        Self { }
+    }
+
+    fn get_edges(&self, coord: usize) -> StateList<Edge> {
+        let edge_sep_coord = coord;
         let is_slice_edge = coord_to_piece_distribution(
             edge_sep_coord, 12, 4);
 
@@ -45,52 +48,36 @@ impl ESliceEdgeSepCoord {
 }
 
 impl Coordinate for ESliceEdgeSepCoord {
-    fn new(raw_coord: usize) -> Self {
-        Self {
-            coord: raw_coord
-        }
-    }
 
-    fn get_size() -> usize {
+    fn get_size(&self) -> usize {
         NUM_EDGE_SEP_COMBINATIONS
     }
 
-    fn get_solved_coords() -> Vec<usize> {
+    fn get_solved_coords(&self) -> Vec<usize> {
         vec![0]
     }
 
-    fn get_raw_value(&self) -> usize {
-        self.coord
-    }
-
-
-    fn get_allowed_turns() -> Vec<Turn> {
+    fn get_allowed_turns(&self) -> Vec<Turn> {
         // All outer layer turns are allowed
         Turn::get_outer_layer_turns()
     }
 
-    fn from_raw_state(state: RawState) -> Self {
-        let edge_sep_coord = edge_sep_to_coord(state.edges);
-
-        Self {
-            coord: edge_sep_coord
-        }
+    fn convert_raw_state_to_coord(&self, state: RawState) -> usize {
+        edge_sep_to_coord(state.edges)
     }
 
-    fn to_example_raw_state(&self) -> RawState {
+    fn convert_coord_to_example_raw_state(&self, coord: usize) -> RawState {
         let mut state = RawState::solved();
-        state.edges = self.get_edges();
+        state.edges = self.get_edges(coord);
         state
     }
 
-    fn apply_raw_move(&self, turn_effect: &TurnEffect) -> Self {
-        let mut edges = self.get_edges();
+    fn apply_raw_move(&self, coord: usize, turn: &Turn) -> usize {
+        let mut edges = self.get_edges(coord);
+        let turn_effect = TurnEffect::from_turn(turn);
         turn_effect.apply_to_edges_statelist(&mut edges);
-        let edge_sep_coord = edge_sep_to_coord(edges);
 
-        Self {
-            coord: edge_sep_coord
-         }
+        edge_sep_to_coord(edges)
     }
 
 }

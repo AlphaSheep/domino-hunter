@@ -5,58 +5,62 @@ use crate::rawcube::TurnEffect;
 use crate::turndef::{Turn, Algorithm};
 
 /// MoveTable maps how a specific turn changes a coordinate
-struct MoveTable {
+struct MoveTable<C: Coordinate> {
     table: Vec<usize>,
+    coord_type: C,
 }
 
-impl MoveTable {
-    fn generate_from_base_turn<C: Coordinate>(turn: &Turn) -> Self {
-        let mut table = vec![usize::MAX; C::get_size()];
+impl<C: Coordinate> MoveTable<C> {
+    fn generate_from_base_turn(coord_type: C, turn: &Turn) -> Self {
+        let mut table = vec![usize::MAX; coord_type.get_size()];
         let turn_effect = TurnEffect::from_turn(&turn);
 
-        for i in 0..C::get_size() {
-            let coord = C::new(i);
-            let new_coord = coord.apply_raw_move(&turn_effect);
-            table[i] = new_coord.get_raw_value();
+        for coord in 0..coord_type.get_size() {
+            let new_coord = coord_type.apply_raw_move(coord, &turn);
+            table[coord] = new_coord;
         }
-        Self { table }
+        Self {
+            table,
+            coord_type,
+        }
     }
 
-    fn generate_from_compound_turn<C: Coordinate>(turn: &Turn, move_tables: &MoveTables<C>) -> Self {
-        let mut table = vec![usize::MAX; C::get_size()];
+    fn generate_from_compound_turn(coord_type: C, turn: &Turn, move_tables: &MoveTables<C>) -> Self {
+        let mut table = vec![usize::MAX; coord_type.get_size()];
         let base_turns = turn.to_base_turns();
 
-        for i in 0..C::get_size() {
-            let coord = C::new(i);
+        for coord in 0..coord_type.get_size() {
             let mut new_coord = coord;
             for base_turn in &base_turns {
                 new_coord = move_tables.apply_move_to_coord(new_coord, base_turn);
             }
-            table[i] = new_coord.get_raw_value();
+            table[coord] = new_coord;
         }
-
-        Self { table }
+        Self {
+            table,
+            coord_type,
+        }
     }
 }
 
 /// MoveTables maps how each turn from a set of turns changes a coordinate
 pub struct MoveTables<C: Coordinate> {
-    table: HashMap<Turn, MoveTable>,
+    table: HashMap<Turn, MoveTable<C>>,
     turns: Vec<Turn>,
-    _base_coord: C,
+    coord_type: C,
 }
 
 impl<C: Coordinate> MoveTables<C> {
-    fn empty() -> Self {
+    fn empty(coord_type: C) -> Self {
         Self {
             table: HashMap::new(),
-            _base_coord: C::new(0),
+            coord_type,
             turns: Vec::new(),
         }
     }
 
     pub fn get_size(&self) -> usize {
-        C::get_size() * self.turns.len()
+        self.coord_type.get_size() * self.turns.len()
     }
 
     pub fn get_turns(&self) -> &[Turn] {
@@ -72,7 +76,7 @@ impl<C: Coordinate> MoveTables<C> {
         }
 
         for turn in base_turns {
-            self.table.insert(turn, MoveTable::generate_from_base_turn::<C>(&turn));
+            self.table.insert(turn, MoveTable::generate_from_base_turn(self.coord_type, &turn));
             self.turns.push(turn);
         }
     }
@@ -80,23 +84,23 @@ impl<C: Coordinate> MoveTables<C> {
     fn generate_compound_tables(&mut self, move_set: &[Turn]) {
         for turn in move_set {
             if !turn.is_base_move() {
-                self.table.insert(*turn, MoveTable::generate_from_compound_turn::<C>(turn, self));
+                self.table.insert(*turn, MoveTable::generate_from_compound_turn(self.coord_type, turn, self));
                 self.turns.push(*turn);
             }
         }
     }
 
-    pub fn new(move_set: &[Turn]) -> Self {
-        let mut tables = Self::empty();
+    pub fn new(coord_type: C, move_set: &[Turn]) -> Self {
+        let mut tables = Self::empty(coord_type);
         tables.generate_base_tables(move_set);
         tables.generate_compound_tables(move_set);
         tables
     }
 
-    pub fn apply_move_to_coord(&self, coord: C, turn: &Turn) -> C {
+    pub fn apply_move_to_coord(&self, coord: usize, turn: &Turn) -> usize {
         let table = self.table.get(&turn)
         .expect("Move table not found for turn");
-        let new_coord = table.table[coord.get_raw_value()];
-        C::new(new_coord)
+        let new_coord = table.table[coord];
+        new_coord
     }
 }

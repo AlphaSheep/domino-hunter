@@ -6,15 +6,18 @@ use crate::turndef::Turn;
 /// Coordinate to represent corner permutation
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
 pub struct CornerPermCoord {
-    coord: usize,
 }
 
 const NUM_CORNER_PERM_COMBINATIONS: usize = 40320;
 
 impl CornerPermCoord {
-    fn get_corners(&self) -> StateList<Corner> {
+    fn new() -> Self {
+        Self { }
+    }
+
+    fn get_corners(&self, coord: usize) -> StateList<Corner> {
         let mut corners = Vec::with_capacity(8);
-        for corner in coord_to_permutation(self.coord, 8) {
+        for corner in coord_to_permutation(coord, 8) {
             corners.push(corner.into());
         }
         StateList::new(corners)
@@ -22,46 +25,34 @@ impl CornerPermCoord {
 }
 
 impl Coordinate for CornerPermCoord {
-    fn new(raw_coord: usize) -> Self {
-        Self {
-            coord: raw_coord
-        }
-    }
-
-    fn get_size() -> usize {
+    fn get_size(&self) -> usize {
         NUM_CORNER_PERM_COMBINATIONS
     }
 
-    fn get_solved_coords() -> Vec<usize> {
+    fn get_solved_coords(&self) -> Vec<usize> {
         vec![0]
     }
 
-    fn get_raw_value(&self) -> usize {
-        self.coord
-    }
-
-    fn get_allowed_turns() -> Vec<Turn> {
+    fn get_allowed_turns(&self) -> Vec<Turn> {
         // All outer layer turns are allowed
         Turn::get_outer_layer_turns()
     }
 
-    fn from_raw_state(state: RawState) -> Self {
-        Self {
-            coord: permutation_to_coord(state.corners.as_slice())
-        }
+    fn convert_raw_state_to_coord(&self, state: RawState) -> usize {
+        permutation_to_coord(state.corners.as_slice())
     }
 
-    fn to_example_raw_state(&self) -> RawState {
+    fn convert_coord_to_example_raw_state(&self, coord: usize) -> RawState {
         let mut state = RawState::solved();
-        state.corners = self.get_corners();
+        state.corners = self.get_corners(coord);
         state
     }
 
-    fn apply_raw_move(&self, turn_effect: &TurnEffect) -> Self {
-        let mut corners = self.get_corners();
+    fn apply_raw_move(&self, coord: usize, turn: &Turn) -> usize {
+        let mut corners = self.get_corners(coord);
+        let turn_effect = TurnEffect::from_turn(turn);
         turn_effect.apply_to_corners_statelist(&mut corners);
-        Self {
-            coord: permutation_to_coord(corners.as_slice())
-        }
+
+        permutation_to_coord(corners.as_slice())
     }
 }
