@@ -1,23 +1,20 @@
 use std::collections::HashMap;
-use std::fmt::Debug;
 use std::hash::BuildHasherDefault;
 
 use nohash_hasher::NoHashHasher;
 
-use crate::coordinates::Coordinate;
+use crate::coordinates::{Coordinate, BasicCoordinate};
 use crate::rawcube::TurnEffect;
 use crate::turndef::{Turn, Algorithm};
 
 /// MoveTable maps how a specific turn changes a coordinate
-struct MoveTable<C: Coordinate> {
+struct MoveTable {
     table: Vec<usize>,
-    coord_type: C,
 }
 
-impl<C: Coordinate> MoveTable<C> {
-    fn generate_from_base_turn(coord_type: C, turn: &Turn) -> Self {
+impl MoveTable {
+    fn generate_from_base_turn<C: BasicCoordinate>(coord_type: C, turn: &Turn) -> Self {
         let mut table = vec![usize::MAX; coord_type.get_size()];
-        let turn_effect = TurnEffect::from_turn(&turn);
 
         for coord in 0..coord_type.get_size() {
             let new_coord = coord_type.apply_raw_move(coord, &turn);
@@ -25,15 +22,16 @@ impl<C: Coordinate> MoveTable<C> {
         }
         Self {
             table,
-            coord_type,
         }
     }
+}
 
-    fn generate_from_compound_turn(coord_type: C, turn: &Turn, move_tables: &MoveTables<C>) -> Self {
-        let mut table = vec![usize::MAX; coord_type.get_size()];
+impl MoveTable {
+    fn generate_from_compound_turn(turn: &Turn, size: usize, move_tables: &MoveTables) -> Self {
+        let mut table = vec![usize::MAX; size];
         let base_turns = turn.to_base_turns();
 
-        for coord in 0..coord_type.get_size() {
+        for coord in 0..size {
             let mut new_coord = coord;
             for base_turn in &base_turns {
                 new_coord = move_tables.apply_move_to_coord(new_coord, base_turn);
@@ -42,36 +40,29 @@ impl<C: Coordinate> MoveTable<C> {
         }
         Self {
             table,
-            coord_type,
         }
     }
 }
 
 /// MoveTables maps how each turn from a set of turns changes a coordinate
-pub struct MoveTables<C: Coordinate> {
-    table: HashMap<Turn, MoveTable<C>, BuildHasherDefault<NoHashHasher<usize>>>,
+pub struct MoveTables {
+    table: HashMap<Turn, MoveTable, BuildHasherDefault<NoHashHasher<usize>>>,
     turns: Vec<Turn>,
-    coord_type: C,
 }
 
-impl<C: Coordinate> MoveTables<C> {
-    fn empty(coord_type: C) -> Self {
+impl MoveTables {
+    fn empty() -> Self {
         Self {
             table: HashMap::with_hasher(BuildHasherDefault::default()),
-            coord_type,
             turns: Vec::new(),
         }
-    }
-
-    pub fn get_size(&self) -> usize {
-        self.coord_type.get_size() * self.turns.len()
     }
 
     pub fn get_turns(&self) -> &[Turn] {
         &self.turns
     }
 
-    fn generate_base_tables(&mut self, move_set: &[Turn]) {
+    fn generate_base_tables<C: BasicCoordinate>(&mut self, coord_type: C, move_set: &[Turn]) {
         let mut base_turns = Vec::new();
         for turn in move_set.to_base_turns() {
             if turn.is_base_move() && !base_turns.contains(&turn) {
@@ -80,24 +71,24 @@ impl<C: Coordinate> MoveTables<C> {
         }
 
         for turn in base_turns {
-            self.table.insert(turn, MoveTable::generate_from_base_turn(self.coord_type, &turn));
+            self.table.insert(turn, MoveTable::generate_from_base_turn(coord_type, &turn));
             self.turns.push(turn);
         }
     }
 
-    fn generate_compound_tables(&mut self, move_set: &[Turn]) {
+    fn generate_compound_tables(&mut self, size: usize, move_set: &[Turn]) {
         for turn in move_set {
             if !turn.is_base_move() {
-                self.table.insert(*turn, MoveTable::generate_from_compound_turn(self.coord_type, turn, self));
+                self.table.insert(*turn, MoveTable::generate_from_compound_turn(turn, size, self));
                 self.turns.push(*turn);
             }
         }
     }
 
-    pub fn new(coord_type: C, move_set: &[Turn]) -> Self {
-        let mut tables = Self::empty(coord_type);
-        tables.generate_base_tables(move_set);
-        tables.generate_compound_tables(move_set);
+    pub fn new_basic_table<C: BasicCoordinate>(coord_type: C, move_set: &[Turn]) -> Self {
+        let mut tables = Self::empty();
+        tables.generate_base_tables(coord_type, move_set);
+        tables.generate_compound_tables(coord_type.get_size(), move_set);
         tables
     }
 

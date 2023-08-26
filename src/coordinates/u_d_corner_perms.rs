@@ -6,6 +6,8 @@ use crate::coordutils::{
 use crate::rawcube::{RawState, StateList, Corner, TurnEffect};
 use crate::turndef::Turn;
 
+use super::BasicCoordinate;
+
 const NUM_CORNER_DISTRIBUTIONS: usize = 70; // 8 choose 4. Number of arrangements of 4 corners from the U or D layer.
 const NUM_LAYER_CORNER_PERMUTATIONS: usize = 24; // Number of permutations of 4 corners that belonmg to a layer.
 
@@ -25,11 +27,11 @@ impl UCornerPermCoord {
         Self { }
     }
 
-    fn get_corners(&self, coord: usize) -> StateList<Corner> {
+    fn get_corners(self, coord: usize) -> StateList<Corner> {
         get_corners(coord, &U_LAYER_CORNERS, &D_LAYER_CORNERS)
     }
 
-    fn get_coord_for_corners(&self, corners: &[Corner]) -> usize {
+    fn get_coord_for_corners(self, corners: &[Corner]) -> usize {
         get_coord_for_corners(corners, &U_LAYER_CORNERS)
     }
 }
@@ -39,11 +41,11 @@ impl DCornerPermCoord {
         Self { }
     }
 
-    fn get_corners(&self, coord: usize) -> StateList<Corner> {
+    fn get_corners(self, coord: usize) -> StateList<Corner> {
         get_corners(coord, &D_LAYER_CORNERS, &U_LAYER_CORNERS)
     }
 
-    fn get_coord_for_corners(&self, corners: &[Corner]) -> usize {
+    fn get_coord_for_corners(self, corners: &[Corner]) -> usize {
         get_coord_for_corners(corners, &D_LAYER_CORNERS)
     }
 }
@@ -62,6 +64,16 @@ impl Coordinate for UCornerPermCoord {
         Turn::get_outer_layer_turns()
     }
 
+    fn apply_turn(&self, coord: usize, turn: &Turn) -> usize {
+        let mut corners = get_corners(coord, &U_LAYER_CORNERS, &D_LAYER_CORNERS);
+        let turn_effect = TurnEffect::from_turn(turn);
+        turn_effect.apply_to_corners_statelist(&mut corners);
+        get_coord_for_corners(corners.as_slice(), &U_LAYER_CORNERS)
+    }
+}
+
+impl BasicCoordinate for UCornerPermCoord {
+
     fn convert_raw_state_to_coord(&self, state: &RawState) -> usize {
         let corners = state.corners.as_slice();
         self.get_coord_for_corners(corners)
@@ -73,11 +85,11 @@ impl Coordinate for UCornerPermCoord {
         state
     }
 
-    fn apply_raw_move(&self, coord: usize, turn: &Turn) -> usize {
-        let mut corners = self.get_corners(coord);
+    fn apply_raw_turn(coord: usize, turn: &Turn) -> usize {
+        let mut corners = get_corners(coord, &U_LAYER_CORNERS, &D_LAYER_CORNERS);
         let turn_effect = TurnEffect::from_turn(turn);
         turn_effect.apply_to_corners_statelist(&mut corners);
-        self.get_coord_for_corners(corners.as_slice())
+        get_coord_for_corners(corners.as_slice(), &U_LAYER_CORNERS)
     }
 }
 
@@ -95,6 +107,16 @@ impl Coordinate for DCornerPermCoord {
         Turn::get_outer_layer_turns()
     }
 
+    fn apply_turn(&self, coord: usize, turn: &Turn) -> usize {
+        let mut corners = get_corners(coord, &D_LAYER_CORNERS, &U_LAYER_CORNERS);
+        let turn_effect = TurnEffect::from_turn(turn);
+        turn_effect.apply_to_corners_statelist(&mut corners);
+        get_coord_for_corners(corners.as_slice(), &D_LAYER_CORNERS)
+    }
+}
+
+impl BasicCoordinate for DCornerPermCoord {
+
     fn convert_raw_state_to_coord(&self, state: &RawState) -> usize {
         let corners = state.corners.as_slice();
         self.get_coord_for_corners(corners)
@@ -106,11 +128,11 @@ impl Coordinate for DCornerPermCoord {
         state
     }
 
-    fn apply_raw_move(&self, coord: usize, turn: &Turn) -> usize {
-        let mut corners = self.get_corners(coord);
+    fn apply_raw_turn(coord: usize, turn: &Turn) -> usize {
+        let mut corners = get_corners(coord, &D_LAYER_CORNERS, &U_LAYER_CORNERS);
         let turn_effect = TurnEffect::from_turn(turn);
         turn_effect.apply_to_corners_statelist(&mut corners);
-        self.get_coord_for_corners(corners.as_slice())
+        get_coord_for_corners(corners.as_slice(), &D_LAYER_CORNERS)
     }
 }
 

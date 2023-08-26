@@ -3,7 +3,7 @@ use crate::movetables::MoveTables;
 use crate::pruningtables::PruningTable;
 use crate::turndef::Turn;
 
-pub fn solve_optimally<C: Coordinate>(mut coord: usize, movetables: MoveTables<C>, pruningtables: PruningTable<C>) -> Vec<Turn> {
+pub fn solve_optimally(mut coord: usize, movetables: MoveTables, pruningtables: PruningTable) -> Vec<Turn> {
     let mut current_distance = pruningtables.get_distance(coord);
     let mut solution = Vec::new();
 

@@ -9,7 +9,7 @@ mod solver;
 
 use std::time::Instant;
 
-use crate::coordinates::Coordinate;
+use crate::coordinates::{Coordinate, BasicCoordinate};
 use crate::movetables::MoveTables;
 use crate::pruningtables::PruningTable;
 use crate::rawcube::RawState;
@@ -50,15 +50,15 @@ fn main() {
     // Generate move tables for EO
     println!("Generating move tables");
     let now = Instant::now();
-    let eo_move_tables = MoveTables::new(eo, &eo.get_allowed_turns());
-    let co_move_tables = MoveTables::new(co, &co.get_allowed_turns());
-    // let e_slice_move_tables = MoveTables::new(e_slice, &e_slice.get_allowed_turns());
-    let cp_move_tables = MoveTables::new(cp, &cp.get_allowed_turns());
-    // let u_corners_move_tables = MoveTables::new(u_corners, &u_corners.get_allowed_turns());
-    // let d_corners_move_tables = MoveTables::new(d_corners, &d_corners.get_allowed_turns());
-    let e_slice_edges_move_tables = MoveTables::new(e_slice_edges, &e_slice_edges.get_allowed_turns());
-    let m_slice_edges_move_tables = MoveTables::new(m_slice_edges, &m_slice_edges.get_allowed_turns());
-    let s_slice_edges_move_tables = MoveTables::new(s_slice_edges, &s_slice_edges.get_allowed_turns());
+    let eo_move_tables = MoveTables::new_basic_table(eo, &eo.get_allowed_turns());
+    let co_move_tables = MoveTables::new_basic_table(co, &co.get_allowed_turns());
+    // let e_slice_move_tables = MoveTables::new_basic_table(e_slice, &e_slice.get_allowed_turns());
+    let cp_move_tables = MoveTables::new_basic_table(cp, &cp.get_allowed_turns());
+    // let u_corners_move_tables = MoveTables::new_basic_table(u_corners, &u_corners.get_allowed_turns());
+    // let d_corners_move_tables = MoveTables::new_basic_table(d_corners, &d_corners.get_allowed_turns());
+    let e_slice_edges_move_tables = MoveTables::new_basic_table(e_slice_edges, &e_slice_edges.get_allowed_turns());
+    let m_slice_edges_move_tables = MoveTables::new_basic_table(m_slice_edges, &m_slice_edges.get_allowed_turns());
+    let s_slice_edges_move_tables = MoveTables::new_basic_table(s_slice_edges, &s_slice_edges.get_allowed_turns());
     println!("Total time taken: {} seconds", (now.elapsed().as_micros() as f64 / 1_000_000.0));
 
     // Generate pruning tables for EO
@@ -66,7 +66,7 @@ fn main() {
     let now = Instant::now();
     let eo_pruning_table = PruningTable::new(eo, &eo_move_tables);
     let co_pruning_table = PruningTable::new(co, &co_move_tables);
-    // let e_slice_pruning_table = PruningTable::new(e_slice, &e_slice_move_tables);
+    // let e_slice_pruning_table = PruningTable::new(e_slice_edges, &e_slice_move_tables);
     let cp_pruning_table = PruningTable::new(cp, &cp_move_tables);
     // let u_corners_pruning_table = PruningTable::new(u_corners, &u_corners_move_tables);
     // let d_corners_pruning_table = PruningTable::new(d_corners, &d_corners_move_tables);

@@ -6,6 +6,8 @@ use crate::coordutils::{
 use crate::rawcube::{RawState, StateList, Edge, TurnEffect};
 use crate::turndef::Turn;
 
+use super::BasicCoordinate;
+
 const NUM_EDGE_DISTRIBUTIONS: usize = 495; // 12 choose 4. Number of arrangements of 4 edges from a slice.
 const NUM_SLICE_EDGE_PERMUTATIONS: usize = 24; // Number of permutations of 4 edges that belong to a slice.
 
@@ -35,12 +37,12 @@ impl ESliceEdgePermCoord {
         Self { }
     }
 
-    fn get_edges(&self, coord: usize) -> StateList<Edge> {
+    fn get_edges(self, coord: usize) -> StateList<Edge> {
         let off_slice_edges = [M_SLICE_EDGES, S_SLICE_EDGES].concat();
         get_edges(coord, &E_SLICE_EDGES, &off_slice_edges)
     }
 
-    fn get_coord_for_edges(&self, edges: &[Edge]) -> usize {
+    fn get_coord_for_edges(self, edges: &[Edge]) -> usize {
         get_coord_for_edges(edges, &E_SLICE_EDGES)
     }
 }
@@ -50,12 +52,12 @@ impl MSliceEdgePermCoord {
         Self { }
     }
 
-    fn get_edges(&self, coord: usize) -> StateList<Edge> {
+    fn get_edges(self, coord: usize) -> StateList<Edge> {
         let off_slice_edges = [E_SLICE_EDGES, S_SLICE_EDGES].concat();
         get_edges(coord, &M_SLICE_EDGES, &off_slice_edges)
     }
 
-    fn get_coord_for_edges(&self, edges: &[Edge]) -> usize {
+    fn get_coord_for_edges(self, edges: &[Edge]) -> usize {
         get_coord_for_edges(edges, &M_SLICE_EDGES)
     }
 }
@@ -65,12 +67,12 @@ impl SSliceEdgePermCoord {
         Self { }
     }
 
-    fn get_edges(&self, coord: usize) -> StateList<Edge> {
+    fn get_edges(self, coord: usize) -> StateList<Edge> {
         let off_slice_edges = [E_SLICE_EDGES, M_SLICE_EDGES].concat();
         get_edges(coord, &S_SLICE_EDGES, &off_slice_edges)
     }
 
-    fn get_coord_for_edges(&self, edges: &[Edge]) -> usize {
+    fn get_coord_for_edges(self, edges: &[Edge]) -> usize {
         get_coord_for_edges(edges, &S_SLICE_EDGES)
     }
 }
@@ -90,6 +92,19 @@ impl Coordinate for ESliceEdgePermCoord {
         Turn::get_outer_layer_turns()
     }
 
+    fn apply_turn(&self, coord: usize, turn: &Turn) -> usize {
+        let off_slice_edges = [M_SLICE_EDGES, S_SLICE_EDGES].concat();
+        let mut edges = get_edges(coord, &E_SLICE_EDGES, &off_slice_edges);
+
+        let turn_effect = TurnEffect::from_turn(turn);
+        turn_effect.apply_to_edges_statelist(&mut edges);
+
+        get_coord_for_edges(edges.as_slice(), &E_SLICE_EDGES)
+    }
+}
+
+impl BasicCoordinate for ESliceEdgePermCoord {
+
     fn convert_raw_state_to_coord(&self, state: &RawState) -> usize {
         let edges = state.edges.as_slice();
         self.get_coord_for_edges(edges)
@@ -101,11 +116,14 @@ impl Coordinate for ESliceEdgePermCoord {
         state
     }
 
-    fn apply_raw_move(&self, coord: usize, turn: &Turn) -> usize {
-        let mut edges = self.get_edges(coord);
+    fn apply_raw_turn(coord: usize, turn: &Turn) -> usize {
+        let off_slice_edges = [M_SLICE_EDGES, S_SLICE_EDGES].concat();
+        let mut edges = get_edges(coord, &E_SLICE_EDGES, &off_slice_edges);
+
         let turn_effect = TurnEffect::from_turn(turn);
         turn_effect.apply_to_edges_statelist(&mut edges);
-        self.get_coord_for_edges(&edges.as_slice())
+
+        get_coord_for_edges(edges.as_slice(), &E_SLICE_EDGES)
     }
 }
 
@@ -124,6 +142,19 @@ impl Coordinate for MSliceEdgePermCoord {
         Turn::get_outer_layer_turns()
     }
 
+    fn apply_turn(&self, coord: usize, turn: &Turn) -> usize {
+        let off_slice_edges = [E_SLICE_EDGES, S_SLICE_EDGES].concat();
+        let mut edges = get_edges(coord, &M_SLICE_EDGES, &off_slice_edges);
+
+        let turn_effect = TurnEffect::from_turn(turn);
+        turn_effect.apply_to_edges_statelist(&mut edges);
+
+        get_coord_for_edges(edges.as_slice(), &M_SLICE_EDGES)
+    }
+}
+
+impl BasicCoordinate for MSliceEdgePermCoord {
+
     fn convert_raw_state_to_coord(&self, state: &RawState) -> usize {
         let edges = state.edges.as_slice();
         self.get_coord_for_edges(edges)
@@ -135,11 +166,14 @@ impl Coordinate for MSliceEdgePermCoord {
         state
     }
 
-    fn apply_raw_move(&self, coord: usize, turn: &Turn) -> usize {
-        let mut edges = self.get_edges(coord);
+    fn apply_raw_turn(coord: usize, turn: &Turn) -> usize {
+        let off_slice_edges = [E_SLICE_EDGES, S_SLICE_EDGES].concat();
+        let mut edges = get_edges(coord, &M_SLICE_EDGES, &off_slice_edges);
+
         let turn_effect = TurnEffect::from_turn(turn);
         turn_effect.apply_to_edges_statelist(&mut edges);
-        self.get_coord_for_edges(&edges.as_slice())
+
+        get_coord_for_edges(edges.as_slice(), &M_SLICE_EDGES)
     }
 }
 
@@ -158,6 +192,19 @@ impl Coordinate for SSliceEdgePermCoord {
         Turn::get_outer_layer_turns()
     }
 
+    fn apply_turn(&self, coord: usize, turn: &Turn) -> usize {
+        let off_slice_edges = [E_SLICE_EDGES, M_SLICE_EDGES].concat();
+        let mut edges = get_edges(coord, &S_SLICE_EDGES, &off_slice_edges);
+
+        let turn_effect = TurnEffect::from_turn(turn);
+        turn_effect.apply_to_edges_statelist(&mut edges);
+
+        get_coord_for_edges(edges.as_slice(), &S_SLICE_EDGES)
+    }
+}
+
+impl BasicCoordinate for SSliceEdgePermCoord {
+
     fn convert_raw_state_to_coord(&self, state: &RawState) -> usize {
         let edges = state.edges.as_slice();
         self.get_coord_for_edges(edges)
@@ -169,11 +216,14 @@ impl Coordinate for SSliceEdgePermCoord {
         state
     }
 
-    fn apply_raw_move(&self, coord: usize, turn: &Turn) -> usize {
-        let mut edges = self.get_edges(coord);
+    fn apply_raw_turn(coord: usize, turn: &Turn) -> usize {
+        let off_slice_edges = [E_SLICE_EDGES, M_SLICE_EDGES].concat();
+        let mut edges = get_edges(coord, &S_SLICE_EDGES, &off_slice_edges);
+
         let turn_effect = TurnEffect::from_turn(turn);
         turn_effect.apply_to_edges_statelist(&mut edges);
-        self.get_coord_for_edges(&edges.as_slice())
+
+        get_coord_for_edges(edges.as_slice(), &S_SLICE_EDGES)
     }
 }
 

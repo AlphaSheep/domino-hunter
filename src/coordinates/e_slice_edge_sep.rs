@@ -3,6 +3,8 @@ use crate::coordutils::{piece_distibution_to_coord, coord_to_piece_distribution}
 use crate::rawcube::{RawState, StateList, TurnEffect, Edge, Swap};
 use crate::turndef::Turn;
 
+use super::BasicCoordinate;
+
 /// Coordinate to represent the separation of edges into E slice and UD slice
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
 pub struct ESliceEdgeSepCoord {
@@ -18,32 +20,8 @@ const E_UD_SWAPS: [Swap<Edge>; 4] = [
 ];
 
 impl ESliceEdgeSepCoord {
-    fn new() -> Self {
+    pub fn new() -> Self {
         Self { }
-    }
-
-    fn get_edges(&self, coord: usize) -> StateList<Edge> {
-        let edge_sep_coord = coord;
-        let is_slice_edge = coord_to_piece_distribution(
-            edge_sep_coord, 12, 4);
-
-        let mut edge_list = Vec::new();
-        let mut slice_edge_index = 0;
-        let mut ud_edge_index = 0;
-
-        for i in 0..12 {
-            if is_slice_edge[i] {
-                edge_list.push(SLICE_EDGES[slice_edge_index]);
-                slice_edge_index += 1;
-            } else {
-                edge_list.push(UD_EDGES[ud_edge_index]);
-                ud_edge_index += 1;
-            }
-        }
-        let mut edges = StateList::new(edge_list);
-        edges.apply_swaps(&E_UD_SWAPS);
-
-        edges
     }
 }
 
@@ -62,18 +40,29 @@ impl Coordinate for ESliceEdgeSepCoord {
         Turn::get_outer_layer_turns()
     }
 
+    fn apply_turn(&self, coord: usize, turn: &Turn) -> usize {
+        let mut edges = get_edges(coord);
+        let turn_effect = TurnEffect::from_turn(turn);
+        turn_effect.apply_to_edges_statelist(&mut edges);
+
+        edge_sep_to_coord(&edges)
+    }
+}
+
+impl BasicCoordinate for ESliceEdgeSepCoord {
+
     fn convert_raw_state_to_coord(&self, state: &RawState) -> usize {
         edge_sep_to_coord(&state.edges)
     }
 
     fn convert_coord_to_example_raw_state(&self, coord: usize) -> RawState {
         let mut state = RawState::solved();
-        state.edges = self.get_edges(coord);
+        state.edges = get_edges(coord);
         state
     }
 
-    fn apply_raw_move(&self, coord: usize, turn: &Turn) -> usize {
-        let mut edges = self.get_edges(coord);
+    fn apply_raw_turn( coord: usize, turn: &Turn) -> usize {
+        let mut edges = get_edges(coord);
         let turn_effect = TurnEffect::from_turn(turn);
         turn_effect.apply_to_edges_statelist(&mut edges);
 
@@ -92,4 +81,28 @@ fn edge_sep_to_coord(edge_state: &StateList<Edge>) -> usize {
     }
 
     piece_distibution_to_coord(&is_slice_edge)
+}
+
+fn get_edges(coord: usize) -> StateList<Edge> {
+    let edge_sep_coord = coord;
+    let is_slice_edge = coord_to_piece_distribution(
+        edge_sep_coord, 12, 4);
+
+    let mut edge_list = Vec::new();
+    let mut slice_edge_index = 0;
+    let mut ud_edge_index = 0;
+
+    for i in 0..12 {
+        if is_slice_edge[i] {
+            edge_list.push(SLICE_EDGES[slice_edge_index]);
+            slice_edge_index += 1;
+        } else {
+            edge_list.push(UD_EDGES[ud_edge_index]);
+            ud_edge_index += 1;
+        }
+    }
+    let mut edges = StateList::new(edge_list);
+    edges.apply_swaps(&E_UD_SWAPS);
+
+    edges
 }

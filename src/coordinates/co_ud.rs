@@ -3,6 +3,8 @@ use crate::coordutils::{coord_to_twist, twist_to_coord};
 use crate::rawcube::{RawState, StateList, Twist, TurnEffect};
 use crate::turndef::Turn;
 
+use super::BasicCoordinate;
+
 const NUM_CORNER_TWIST_COMBINATIONS: usize = 2187;
 
 
@@ -12,18 +14,8 @@ pub struct COUDCoord {
 }
 
 impl COUDCoord {
-    fn new() -> Self {
+    pub fn new() -> Self {
         Self { }
-    }
-
-    fn get_twists(&self, coord: usize) -> StateList<Twist> {
-        let mut twists = coord_to_twist(coord, 7);
-        let mut total_twist = 0;
-        for twist in &mut twists {
-            total_twist += *twist as usize;
-        }
-        twists.push((3 - (total_twist % 3)).into());
-        StateList::new(twists)
     }
 }
 
@@ -41,21 +33,42 @@ impl Coordinate for COUDCoord {
         Turn::get_outer_layer_turns()
     }
 
+    fn apply_turn(&self, coord: usize, turn: &Turn) -> usize {
+        let mut twists = get_twists(coord);
+        let turn_effect = TurnEffect::from_turn(turn);
+        turn_effect.apply_to_twists_statelist(&mut twists);
+
+        twist_to_coord(&twists.as_slice()[0..7])
+    }
+}
+
+impl BasicCoordinate for COUDCoord {
+
     fn convert_raw_state_to_coord(&self, state: &RawState) -> usize {
         twist_to_coord(&state.twists.as_slice()[0..7])
     }
 
     fn convert_coord_to_example_raw_state(&self, coord: usize) -> RawState {
         let mut state = RawState::solved();
-        state.twists = self.get_twists(coord);
+        state.twists = get_twists(coord);
         state
     }
 
-    fn apply_raw_move(&self, coord: usize, turn: &Turn) -> usize {
-        let mut twists = self.get_twists(coord);
+    fn apply_raw_turn(coord: usize, turn: &Turn) -> usize {
+        let mut twists = get_twists(coord);
         let turn_effect = TurnEffect::from_turn(turn);
         turn_effect.apply_to_twists_statelist(&mut twists);
 
         twist_to_coord(&twists.as_slice()[0..7])
     }
+}
+
+fn get_twists(coord: usize) -> StateList<Twist> {
+    let mut twists = coord_to_twist(coord, 7);
+    let mut total_twist = 0;
+    for twist in &mut twists {
+        total_twist += *twist as usize;
+    }
+    twists.push((3 - (total_twist % 3)).into());
+    StateList::new(twists)
 }
