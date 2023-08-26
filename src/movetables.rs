@@ -2,6 +2,7 @@ use std::collections::HashMap;
 use std::hash::BuildHasherDefault;
 
 use nohash_hasher::NoHashHasher;
+use rayon::prelude::*;
 
 use crate::coordinates::{Coordinate, BasicCoordinate};
 use crate::rawcube::TurnEffect;
@@ -17,9 +18,19 @@ impl MoveTable {
         let mut table = vec![usize::MAX; coord_type.get_size()];
 
         for coord in 0..coord_type.get_size() {
-            let new_coord = coord_type.apply_raw_move(coord, &turn);
-            table[coord] = new_coord;
+            table[coord] = coord;
         }
+
+        table.par_iter_mut().for_each(|coord| {
+            let new_coord = C::apply_raw_turn(*coord, &turn);
+            *coord = new_coord;
+        });
+
+        // for coord in 0..coord_type.get_size() {
+        //     let new_coord = C::apply_raw_turn(coord, &turn);
+        //     table[coord] = new_coord;
+        // }
+
         Self {
             table,
         }
