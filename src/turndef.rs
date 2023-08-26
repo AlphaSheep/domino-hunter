@@ -270,6 +270,16 @@ impl Turn {
         false
     }
 
+    pub fn invert(&self) -> Turn {
+        if self.0 % DOUBLE_TURN == 0 {
+            Turn(self.0)
+        } else if self.0 % INVERSE_TURN == 0 {
+            Turn(self.0 / INVERSE_TURN)
+        } else  {
+            Turn(self.0 * INVERSE_TURN)
+        }
+    }
+
     pub fn get_outer_layer_turns() -> Vec<Self> {
         let mut turns = Vec::new();
         for layer in Self::get_base_outer_layer_turns() {
