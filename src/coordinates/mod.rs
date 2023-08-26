@@ -1,9 +1,4 @@
-pub mod eo_fb;
-pub mod co_ud;
-pub mod e_slice_edge_sep;
-pub mod cp;
-pub mod u_d_corner_perms;
-pub mod e_m_s_edges;
+pub mod basic_coordinates;
 
 use std::fmt::Debug;
 use std::hash::Hash;

@@ -1,14 +1,8 @@
-use crate::coordinates::Coordinate;
+use crate::coordinates::{Coordinate, BasicCoordinate};
 use crate::coordutils::{piece_distibution_to_coord, coord_to_piece_distribution};
 use crate::rawcube::{RawState, StateList, TurnEffect, Edge, Swap};
 use crate::turndef::Turn;
 
-use super::BasicCoordinate;
-
-/// Coordinate to represent the separation of edges into E slice and UD slice
-#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
-pub struct ESliceEdgeSepCoord {
-}
 
 const NUM_EDGE_SEP_COMBINATIONS: usize = 495;
 
@@ -18,6 +12,12 @@ const UD_EDGES: [Edge; 8] = [Edge::UB, Edge::UL, Edge::UF, Edge::UR, Edge::DB, E
 const E_UD_SWAPS: [Swap<Edge>; 4] = [
     (Edge::BL,Edge::UB), (Edge::FL,Edge::UL), (Edge::FR, Edge::UF), (Edge::BR, Edge::UR)
 ];
+
+
+/// Coordinate to represent the separation of edges into E slice and UD slice
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
+pub struct ESliceEdgeSepCoord {
+}
 
 impl ESliceEdgeSepCoord {
     pub fn new() -> Self {

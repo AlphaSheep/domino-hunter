@@ -15,12 +15,12 @@ use crate::pruningtables::PruningTable;
 use crate::rawcube::RawState;
 use crate::solver::solve_optimally;
 
-use crate::coordinates::eo_fb::EOFBCoord;
-use crate::coordinates::co_ud::COUDCoord;
-// use crate::coordinates::e_slice_edge_sep::ESliceEdgeSepCoord;
-use crate::coordinates::cp::CornerPermCoord;
-use crate::coordinates::u_d_corner_perms::{UCornerPermCoord, DCornerPermCoord};
-use crate::coordinates::e_m_s_edges::{ESliceEdgePermCoord, MSliceEdgePermCoord, SSliceEdgePermCoord};
+use crate::coordinates::basic_coordinates::eo_fb::EOFBCoord;
+use crate::coordinates::basic_coordinates::co_ud::COUDCoord;
+// use crate::coordinates::basic_coordinates::e_slice_edge_sep::ESliceEdgeSepCoord;
+use crate::coordinates::basic_coordinates::cp::CornerPermCoord;
+use crate::coordinates::basic_coordinates::u_d_corner_perms::{UCornerPermCoord, DCornerPermCoord};
+use crate::coordinates::basic_coordinates::e_m_s_edges::{ESliceEdgePermCoord, MSliceEdgePermCoord, SSliceEdgePermCoord};
 
 
 fn main() {
@@ -66,7 +66,7 @@ fn main() {
     let now = Instant::now();
     let eo_pruning_table = PruningTable::new(eo, &eo_move_tables);
     let co_pruning_table = PruningTable::new(co, &co_move_tables);
-    // let e_slice_pruning_table = PruningTable::new(e_slice_edges, &e_slice_move_tables);
+    // let e_slice_pruning_table = PruningTable::new(e_slice, &e_slice_move_tables);
     let cp_pruning_table = PruningTable::new(cp, &cp_move_tables);
     // let u_corners_pruning_table = PruningTable::new(u_corners, &u_corners_move_tables);
     // let d_corners_pruning_table = PruningTable::new(d_corners, &d_corners_move_tables);

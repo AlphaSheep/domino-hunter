@@ -1,4 +1,4 @@
-use crate::coordinates::Coordinate;
+use crate::coordinates::{Coordinate, BasicCoordinate};
 use crate::coordutils::{
     coord_to_permutation, permutation_to_coord,
     piece_distibution_to_coord, get_perm_for_distribution_coord
@@ -6,13 +6,13 @@ use crate::coordutils::{
 use crate::rawcube::{RawState, StateList, Corner, TurnEffect};
 use crate::turndef::Turn;
 
-use super::BasicCoordinate;
 
 const NUM_CORNER_DISTRIBUTIONS: usize = 70; // 8 choose 4. Number of arrangements of 4 corners from the U or D layer.
 const NUM_LAYER_CORNER_PERMUTATIONS: usize = 24; // Number of permutations of 4 corners that belonmg to a layer.
 
 const U_LAYER_CORNERS: [Corner; 4] = [Corner::UBL, Corner::UFL, Corner::UFR, Corner::UBR];
 const D_LAYER_CORNERS: [Corner; 4] = [Corner::DBL, Corner::DFL, Corner::DFR, Corner::DBR];
+
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
 pub struct UCornerPermCoord {

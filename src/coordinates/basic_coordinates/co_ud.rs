@@ -1,9 +1,8 @@
-use crate::coordinates::Coordinate;
+use crate::coordinates::{Coordinate, BasicCoordinate};
 use crate::coordutils::{coord_to_twist, twist_to_coord};
 use crate::rawcube::{RawState, StateList, Twist, TurnEffect};
 use crate::turndef::Turn;
 
-use super::BasicCoordinate;
 
 const NUM_CORNER_TWIST_COMBINATIONS: usize = 2187;
 

@@ -1,9 +1,7 @@
-use crate::coordinates::Coordinate;
+use crate::coordinates::{Coordinate, BasicCoordinate};
 use crate::coordutils::{coord_to_permutation, permutation_to_coord};
 use crate::rawcube::{RawState, StateList, TurnEffect, Corner};
 use crate::turndef::Turn;
-
-use super::BasicCoordinate;
 
 /// Coordinate to represent corner permutation
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]

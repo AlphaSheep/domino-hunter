@@ -1,4 +1,4 @@
-use crate::coordinates::Coordinate;
+use crate::coordinates::{Coordinate, BasicCoordinate};
 use crate::coordutils::{
     coord_to_permutation, permutation_to_coord,
     piece_distibution_to_coord, get_perm_for_distribution_coord
@@ -6,7 +6,6 @@ use crate::coordutils::{
 use crate::rawcube::{RawState, StateList, Edge, TurnEffect};
 use crate::turndef::Turn;
 
-use super::BasicCoordinate;
 
 const NUM_EDGE_DISTRIBUTIONS: usize = 495; // 12 choose 4. Number of arrangements of 4 edges from a slice.
 const NUM_SLICE_EDGE_PERMUTATIONS: usize = 24; // Number of permutations of 4 edges that belong to a slice.

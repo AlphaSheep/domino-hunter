@@ -1,9 +1,7 @@
-use crate::coordinates::Coordinate;
+use crate::coordinates::{Coordinate, BasicCoordinate};
 use crate::coordutils::{coord_to_flip, flip_to_coord};
 use crate::rawcube::{RawState, StateList, Flip, TurnEffect};
 use crate::turndef::Turn;
-
-use super::BasicCoordinate;
 
 /// Coordinate for edge orientation relative to the FB axis
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
