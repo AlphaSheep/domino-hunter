@@ -1,5 +1,5 @@
-use crate::coordinates::{Coordinate, BasicCoordinate};
-use crate::coordutils::{
+use crate::coords::{Coordinate, BasicCoordinate};
+use crate::utils::coordutils::{
     coord_to_permutation, permutation_to_coord,
     piece_distibution_to_coord, get_perm_for_distribution_coord
 };

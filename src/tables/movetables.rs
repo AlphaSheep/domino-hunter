@@ -4,7 +4,7 @@ use std::hash::BuildHasherDefault;
 use nohash_hasher::NoHashHasher;
 use rayon::prelude::*;
 
-use crate::coordinates::{Coordinate, BasicCoordinate};
+use crate::coords::{Coordinate, BasicCoordinate};
 use crate::rawcube::TurnEffect;
 use crate::turndef::{Turn, Algorithm};
 

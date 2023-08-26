@@ -1,5 +1,5 @@
-use crate::coordinates::{Coordinate, BasicCoordinate};
-use crate::coordutils::{coord_to_twist, twist_to_coord};
+use crate::coords::{Coordinate, BasicCoordinate};
+use crate::utils::coordutils::{coord_to_twist, twist_to_coord};
 use crate::rawcube::{RawState, StateList, Twist, TurnEffect};
 use crate::turndef::Turn;
 

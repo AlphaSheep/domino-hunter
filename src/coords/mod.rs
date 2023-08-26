@@ -1,4 +1,4 @@
-pub mod basic_coordinates;
+pub mod basic_coords;
 
 use std::fmt::Debug;
 use std::hash::Hash;

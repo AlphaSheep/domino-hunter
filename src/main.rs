@@ -1,26 +1,24 @@
 mod turndef;
 mod rawcube;
-mod coordinates;
-mod coordutils;
-mod mathutils;
-mod movetables;
-mod pruningtables;
+mod coords;
+mod utils;
+mod tables;
 mod solver;
 
 use std::time::Instant;
 
-use crate::coordinates::{Coordinate, BasicCoordinate};
-use crate::movetables::MoveTables;
-use crate::pruningtables::PruningTable;
+use crate::coords::{Coordinate, BasicCoordinate};
+use crate::tables::movetables::MoveTables;
+use crate::tables::pruningtables::PruningTable;
 use crate::rawcube::RawState;
 use crate::solver::solve_optimally;
 
-use crate::coordinates::basic_coordinates::eo_fb::EOFBCoord;
-use crate::coordinates::basic_coordinates::co_ud::COUDCoord;
+use crate::coords::basic_coords::eo_fb::EOFBCoord;
+use crate::coords::basic_coords::co_ud::COUDCoord;
 // use crate::coordinates::basic_coordinates::e_slice_edge_sep::ESliceEdgeSepCoord;
-use crate::coordinates::basic_coordinates::cp::CornerPermCoord;
-use crate::coordinates::basic_coordinates::u_d_corner_perms::{UCornerPermCoord, DCornerPermCoord};
-use crate::coordinates::basic_coordinates::e_m_s_edges::{ESliceEdgePermCoord, MSliceEdgePermCoord, SSliceEdgePermCoord};
+use crate::coords::basic_coords::cp::CornerPermCoord;
+use crate::coords::basic_coords::u_d_corner_perms::{UCornerPermCoord, DCornerPermCoord};
+use crate::coords::basic_coords::e_m_s_edges::{ESliceEdgePermCoord, MSliceEdgePermCoord, SSliceEdgePermCoord};
 
 
 fn main() {

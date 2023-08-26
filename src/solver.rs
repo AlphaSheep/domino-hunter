@@ -1,6 +1,6 @@
-use crate::coordinates::Coordinate;
-use crate::movetables::MoveTables;
-use crate::pruningtables::PruningTable;
+use crate::coords::Coordinate;
+use crate::tables::movetables::MoveTables;
+use crate::tables::pruningtables::PruningTable;
 use crate::turndef::Turn;
 
 pub fn solve_optimally(mut coord: usize, movetables: MoveTables, pruningtables: PruningTable) -> Vec<Turn> {

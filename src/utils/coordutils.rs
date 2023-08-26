@@ -3,7 +3,7 @@ The following are useful functions for converting to and from various
 types of coordinate. Types implementing the Coordinate trait can use these
 */
 
-use crate::mathutils::{binomial, factorial};
+use crate::utils::mathutils::{binomial, factorial};
 use crate::rawcube::{Flip, Twist, PieceState};
 
 /*
